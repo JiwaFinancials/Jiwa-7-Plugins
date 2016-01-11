@@ -2,7 +2,7 @@
 <JiwaDocument xmlns:jiwa="http://www.jiwa.com.au/xml/schemas" Type="JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin">
   <RecID>b0fe994f-365e-4108-ba56-3f0232f3f6ae</RecID>
   <Name>Add Running Total Column to General Ledger Transactions Tab</Name>
-  <Description>This plugin does the following:&amp;#13;&amp;#10;  1.  Adds a check box titled 'Running Totals' to General Ledger Maintenance -&gt; Transactions.&amp;#13;&amp;#10;  2.  When the checkbox is ticked, a column appears in the transactions grid showing the running total as per the currently selected ordering.  Sorting of the grid is disabled.&amp;#13;&amp;#10;  3.  Loading or scrolling to a different account un-ticks the 'Running Totals' check box.</Description>
+  <Description>XXXThis plugin does the following:&amp;#13;&amp;#10;  1.  Adds a check box titled 'Running Totals' to General Ledger Maintenance -&gt; Transactions.&amp;#13;&amp;#10;  2.  When the checkbox is ticked, a column appears in the transactions grid showing the running total as per the currently selected ordering.  Sorting of the grid is disabled.&amp;#13;&amp;#10;  3.  Loading or scrolling to a different account un-ticks the 'Running Totals' check box.</Description>
   <IsEnabled>true</IsEnabled>
   <IsIsolatedToOwnAppDomain>false</IsIsolatedToOwnAppDomain>
   <ExecutionOrder>0</ExecutionOrder>
