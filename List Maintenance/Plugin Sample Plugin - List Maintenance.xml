@@ -1,0 +1,853 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<JiwaDocument xmlns:jiwa="http://www.jiwa.com.au/xml/schemas" Type="JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin">
+  <RecID>37a440f1-dbdc-46d8-98c9-02c7151d9f7e</RecID>
+  <Name>Sample Plugin - List Maintenance</Name>
+  <Description>Demonstrates a simple editable list maintenance form writing data to a custom table.</Description>
+  <IsEnabled>true</IsEnabled>
+  <IsIsolatedToOwnAppDomain>false</IsIsolatedToOwnAppDomain>
+  <ExecutionOrder>0</ExecutionOrder>
+  <Author>Jiwa Financials</Author>
+  <Version />
+  <Code>using Microsoft.VisualBasic;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using JiwaFinancials.Jiwa;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Drawing;
+
+#region "FormPlugin"
+public class FormPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaFormPlugin
+{
+
+    public override object InitializeLifetimeService()
+    {
+        // returning null here will prevent the lease manager
+        // from deleting the Object.
+        return null;
+    }
+
+    public void SetupBeforeHandlers(JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm JiwaForm, JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin)
+    {
+    }
+
+    public void Setup(JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm JiwaForm, JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin)
+    {
+    }
+}
+#endregion
+
+#region "BusinessLogicPlugin"
+public class BusinessLogicPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogicPlugin
+{
+
+    public override object InitializeLifetimeService()
+    {
+        // returning null here will prevent the lease manager
+        // from deleting the Object.
+        return null;
+    }
+
+    public void Setup(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic JiwaBusinessLogic, JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin)
+    {
+    }
+}
+#endregion
+
+#region "ApplicationManagerPlugin"
+public class ApplicationManagerPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaApplicationManagerPlugin
+{
+
+    public override object InitializeLifetimeService()
+    {
+        // returning null here will prevent the lease manager
+        // from deleting the Object.
+        return null;
+    }
+
+    public void Setup(JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin)
+    {
+    }
+}
+#endregion
+
+#region "CustomFieldPlugin"
+public class CustomFieldPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaCustomFieldPlugin
+{
+    public override object InitializeLifetimeService()
+    {
+        // returning null here will prevent the lease manager
+        // from deleting the Object.
+        return null;
+    }
+
+    public void FormatCell(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Col, int Row, JiwaFinancials.Jiwa.JiwaApplication.IJiwaCustomFieldValues HostObject, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomField CustomField, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomFieldValue CustomFieldValue)
+    {
+    }
+
+    public void ReadData(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Row, JiwaFinancials.Jiwa.JiwaApplication.IJiwaCustomFieldValues HostObject, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomField CustomField, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomFieldValue CustomFieldValue)
+    {
+    }
+
+    public void ButtonClicked(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Col, int Row, JiwaFinancials.Jiwa.JiwaApplication.IJiwaCustomFieldValues HostObject, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomField CustomField, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomFieldValue CustomFieldValue)
+    {
+    }
+}
+#endregion
+
+#region "LineCustomFieldPlugin"
+public class LineCustomFieldPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaLineCustomFieldPlugin
+{
+    public override object InitializeLifetimeService()
+    {
+        // returning null here will prevent the lease manager
+        // from deleting the Object.
+        return null;
+    }
+
+    public void FormatCell(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Col, int Row, JiwaFinancials.Jiwa.JiwaApplication.IJiwaLineCustomFieldValues HostItem, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomField CustomField, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomFieldValue CustomFieldValue)
+    {
+    }
+
+    public void ReadData(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Row, JiwaFinancials.Jiwa.JiwaApplication.IJiwaLineCustomFieldValues HostItem, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomField CustomField, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomFieldValue CustomFieldValue)
+    {
+    }
+
+    public void ButtonClicked(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Col, int Row, JiwaFinancials.Jiwa.JiwaApplication.IJiwaLineCustomFieldValues HostItem, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomField CustomField, JiwaFinancials.Jiwa.JiwaApplication.CustomFields.CustomFieldValue CustomFieldValue)
+    {
+    }
+}
+#endregion
+
+#region "SystemSettingPlugin"
+public class SystemSettingPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaSystemSettingPlugin
+{
+    public override object InitializeLifetimeService()
+    {
+        // returning null here will prevent the lease manager
+        // from deleting the Object.
+        return null;
+    }
+
+    public void FormatCell(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Col, int Row, JiwaFinancials.Jiwa.JiwaApplication.SystemSettings.Setting SystemSetting)
+    {
+    }
+
+    public void ReadData(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Row, JiwaFinancials.Jiwa.JiwaApplication.SystemSettings.Setting SystemSetting)
+    {
+    }
+
+    public void ButtonClicked(JiwaFinancials.Jiwa.JiwaApplication.IJiwaBusinessLogic BusinessLogicHost, JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid GridObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm FormObject, int Col, int Row, JiwaFinancials.Jiwa.JiwaApplication.SystemSettings.Setting SystemSetting)
+    {
+    }
+}
+#endregion
+
+#region "ScheduledExecutionPlugin"
+public class ScheduledExecutionPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApplication.IJiwaScheduledExecutionPlugin
+{
+    public void Execute(JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin, JiwaFinancials.Jiwa.JiwaApplication.Schedule.Schedule Schedule)
+    {
+    }
+
+
+    public void OnServiceStart(JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin)
+    {
+    }
+
+
+    public void OnServiceStopping(JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin)
+    {
+    }
+}
+#endregion
+
+#region "Business Logic"
+public class Widget : JiwaFinancials.Jiwa.JiwaApplication.JiwaCollectionItem&lt;Widget&gt;
+{
+
+	private string _Description;
+	private int _Weight;
+	private bool _IsDefault;	
+
+	private System.DateTime m_LastSavedDateTime;
+	public WidgetCollection WidgetCollection {
+		get { return (WidgetCollection)Collection; }
+	}
+
+	public string Description {
+		get { return _Description; }
+		set {
+			_Description = value;
+			NotifyPropertyChanged("Description");
+		}
+	}
+
+	public int Weight {
+		get { return _Weight; }
+		set {
+			_Weight = value;
+			NotifyPropertyChanged("Weight");
+		}
+	}
+
+	public bool IsDefault {
+		get { return _IsDefault; }
+		set {
+			_IsDefault = value;
+			NotifyPropertyChanged("IsDefault");
+
+			if ((Collection != null) &amp;&amp; Collection.Reading == false) {
+				if (value == true) {
+					foreach (Widget otherWidget in Collection) {
+						if (!otherWidget.Equals(this)) {
+							if (otherWidget.IsDefault == true) {
+								otherWidget.SetIsDefault(false);
+							}
+						}
+					}
+				} else {
+					// You can't set the IsDefault to false : you must set another to true.
+					_IsDefault = true;
+					NotifyPropertyChanged("IsDefault");
+				}
+			}
+		}
+	}
+
+	internal void SetIsDefault(bool NewValue)
+	{
+		_IsDefault = NewValue;
+		NotifyPropertyChanged("IsDefault");
+	}
+
+	public override void SaveRecord()
+	{
+		string Sql = null;
+		SqlParameter SQLParam = default(SqlParameter);
+
+		var db = JiwaFinancials.Jiwa.JiwaApplication.Manager.Instance.Database;
+		// Save lines
+
+		if (DeleteFlag == false) {
+			if (InsertFlag) {
+				Sql = @"INSERT INTO Widget (RecID, Description, Weight, IsDefault, ItemNo) 
+						VALUES (@RecID, @Description, @Weight, @IsDefault, @ItemNo)";
+			} else {
+				Sql = @"UPDATE Widget 
+						SET Description = @Description, Weight = @Weight, IsDefault = @IsDefault, ItemNo = @ItemNo
+						WHERE RecID = @RecID
+						AND RowHash = @RowHash";
+			}
+
+			using (SqlCommand SQLCmd = new SqlCommand(Sql, db.SQLConnection, db.SQLTransaction)) {
+				SQLCmd.CommandTimeout = db.DefaultCommandTimeout;
+				SQLParam = new SqlParameter("@RecID", System.Data.SqlDbType.UniqueIdentifier);
+				SQLParam.Value = new Guid(RecID);
+				SQLCmd.Parameters.Add(SQLParam);
+
+				SQLParam = new SqlParameter("@Description", System.Data.SqlDbType.VarChar);
+				SQLParam.Value = Description;
+				SQLCmd.Parameters.Add(SQLParam);
+
+				SQLParam = new SqlParameter("@Weight", System.Data.SqlDbType.Int);
+				SQLParam.Value = Weight;
+				SQLCmd.Parameters.Add(SQLParam);
+
+				SQLParam = new SqlParameter("@IsDefault", System.Data.SqlDbType.Bit);
+				SQLParam.Value = IsDefault;
+				SQLCmd.Parameters.Add(SQLParam);
+				
+				SQLParam = new SqlParameter("@ItemNo", System.Data.SqlDbType.Int);
+				SQLParam.Value = ItemNo;
+				SQLCmd.Parameters.Add(SQLParam);
+
+				if (InsertFlag == false) {
+					SQLParam = new SqlParameter("@RowHash", System.Data.SqlDbType.Timestamp);
+					SQLParam.Value = RowHash;
+					SQLCmd.Parameters.Add(SQLParam);
+				}
+
+				if (SQLCmd.ExecuteNonQuery() == 0) {
+					throw new JiwaFinancials.Jiwa.JiwaApplication.Exceptions.ConcurrencyConflictException("unable to write to Widget table");
+				}
+			}
+		}
+
+		if (DeleteFlag) {
+			Sql = "DELETE FROM Widget WHERE RecID = @RecID AND RowHash = @RowHash";
+
+			using (SqlCommand SQLCmd = new SqlCommand(Sql, db.SQLConnection, db.SQLTransaction)) {
+				SQLCmd.CommandTimeout = db.DefaultCommandTimeout;
+				SQLParam = new SqlParameter("@RecID", System.Data.SqlDbType.Char);
+				SQLParam.Value = RecID;
+				SQLCmd.Parameters.Add(SQLParam);
+
+				SQLParam = new SqlParameter("@RowHash", System.Data.SqlDbType.Timestamp);
+				SQLParam.Value = RowHash;
+				SQLCmd.Parameters.Add(SQLParam);
+
+				if (SQLCmd.ExecuteNonQuery() == 0) {
+					throw new JiwaFinancials.Jiwa.JiwaApplication.Exceptions.ConcurrencyConflictException("unable to delete from Widget");
+				}
+			}
+
+		}
+	}
+}
+
+public class WidgetCollection : JiwaFinancials.Jiwa.JiwaApplication.BusinessLogic.ListMaintenance&lt;Widget&gt;
+{
+
+	protected override void OnRemoving(Widget item)
+	{
+		if (item.IsDefault) {
+			throw new Exception("Cannot remove the widget - make another the default first.");
+		}
+		base.OnRemoving(item);
+	}
+
+	public override void Read()
+	{
+		string Sql = null;
+		SqlDataReader SQLReader = null;
+		bool oldReading = Reading;
+
+		try {
+			Reading = true;
+			Clear();
+
+			var db = JiwaFinancials.Jiwa.JiwaApplication.Manager.Instance.Database;
+
+			Sql = @"SELECT RecID, Description, Weight, IsDefault, ItemNo, RowHash 
+					FROM Widget 
+					ORDER BY ItemNo ";
+
+			using (SqlCommand SQLCmd = new SqlCommand(Sql, db.SQLConnection, db.SQLTransaction)) {
+				SQLCmd.CommandTimeout = JiwaFinancials.Jiwa.JiwaApplication.Manager.Instance.Database.DefaultCommandTimeout;
+
+				SQLReader = SQLCmd.ExecuteReader();
+
+				while (SQLReader.Read() == true) {
+					Widget widget = new Widget();
+
+					widget.RecID = db.Sanitise(SQLReader, "RecID").ToString();
+					widget.Description = db.Sanitise(SQLReader, "Description").ToString();
+					widget.Weight = int.Parse(db.Sanitise(SQLReader, "Weight").ToString());
+					widget.IsDefault = (bool)db.Sanitise(SQLReader, "IsDefault");
+					widget.ItemNo = int.Parse(db.Sanitise(SQLReader, "ItemNo").ToString());
+					
+					widget.RowHash = new byte[8];
+                    SQLReader.GetBytes(5, 0, widget.RowHash, 0, 8); // 5 is the column number in the select query of the RowHash column
+
+					Add(widget);
+				}
+
+				SQLReader.Close();
+			}
+
+			base.OnRead();
+
+		} finally {
+			Reading = oldReading;
+
+			if ((SQLReader != null)) {
+				SQLReader.Close();
+			}
+		}
+	}
+
+	public WidgetCollection() : base()
+	{
+		base.ClientClassName = "WidgetCollection";
+		base.RecIDIsGUID = true;
+	}
+}
+
+
+#endregion
+
+#region "User Interface"
+public class Widgets : JiwaFinancials.Jiwa.JiwaApplication.ListMaintenance.UserInterface&lt;Widget, WidgetCollection&gt;
+{
+
+	#region "Base class overrides"
+	public override void Setup()
+	{
+		AddHandlers();
+		SetupForm();
+	}
+
+	public override void AddHandlers()
+	{
+		grdLines.ButtonClicked += grdLines_ButtonClicked;
+		grdLines.Change += grdLines_Change;
+		grdLines.RowDragMoveCompleted += grdLines_RowDragMoveCompleted;
+		base.AddHandlers();
+	}
+
+	#endregion
+
+	#region "Setup"
+	public void SetupForm()
+	{
+		SetupWindow();
+		SetupControls();
+	}
+
+	private void SetupControls()
+	{		
+		SetupLinesGrid();
+	}
+
+	public void SetupLinesGrid()
+	{
+		JiwaFinancials.Jiwa.JiwaApplication.JiwaManageGrid.JiwaCurrencyCellType weightCellType = new JiwaFinancials.Jiwa.JiwaApplication.JiwaManageGrid.JiwaCurrencyCellType();
+		weightCellType.DecimalPlaces = 0;
+
+		grdLines.AddColumn("RecID", new FarPoint.Win.Spread.CellType.TextCellType(), "RecID", 10, false, false, true, true);
+		grdLines.AddColumn("Description", new FarPoint.Win.Spread.CellType.TextCellType(), "Description", 20, false, true, true, false);
+		grdLines.AddColumn("Weight", weightCellType, "Weight", 10, false, true, true, false);
+		grdLines.AddColumn("Default", new FarPoint.Win.Spread.CellType.CheckBoxCellType(), "Default", 10, false, true, true, false);
+		grdLines.AddColumn("Bin", new JiwaFinancials.Jiwa.JiwaApplication.JiwaManageGrid.JiwaBinButtonCellType(), "", 10, false, true, false, true);
+
+		grdLines.SetupComplete();
+		
+		grdLines.ActiveSheet.RowHeader.ColumnCount = 1;
+        grdLines.ActiveSheet.RowHeaderVisible = true;
+        grdLines.AllowRowMove = true;
+	}
+	#endregion
+
+	#region "Control Event Handlers"
+	#region "grdLines"
+
+	private void grdLines_ButtonClicked(object sender, FarPoint.Win.Spread.EditorNotifyEventArgs e)
+	{
+		FarPoint.Win.Spread.Column column = grdLines.ActiveSheet.Columns[e.Column];
+
+		if (column.Tag.ToString() == "Bin") {
+			BusinessLogic.Remove(BusinessLogic[grdLines.get_GridText("RecID", e.Row).ToString()]);
+		} else if (column.Tag.ToString() == "Default") {
+			if (grdLines.get_GridText("RecID", e.Row).ToString().Trim().Length &gt; 0) {
+				BusinessLogic[grdLines.get_GridText("RecID", e.Row).ToString()].IsDefault = System.Convert.ToBoolean(grdLines.get_GridText(column.Tag.ToString(), e.Row).ToString());
+			}
+		}
+	}
+
+	private void grdLines_Change(object sender, FarPoint.Win.Spread.ChangeEventArgs e)
+	{
+		string Key = null;
+		string ColID = grdLines.ActiveSheet.Columns[e.Column].Tag.ToString();
+
+		if (ColID == "Description") {
+			if (e.Row == grdLines.ActiveSheet.RowCount - 1) {
+				Widget widget = new Widget();
+				widget.Description = grdLines.get_GridText("Description", e.Row).ToString();
+				BusinessLogic.Add(widget);
+			} else {
+				Key = grdLines.get_GridText("RecID", e.Row).ToString();
+				BusinessLogic[Key].Description = grdLines.get_GridText("Description", e.Row).ToString();
+			}
+		} else if (ColID == "Weight") {
+			if (e.Row == grdLines.ActiveSheet.RowCount - 1) {
+				Widget widget = new Widget();
+				widget.Weight = System.Convert.ToInt32(grdLines.get_GridText("Weight", e.Row).ToString());
+				BusinessLogic.Add(widget);
+			} else {
+				Key = grdLines.get_GridText("RecID", e.Row).ToString();
+				BusinessLogic[Key].Weight = System.Convert.ToInt32(grdLines.get_GridText("Weight", e.Row).ToString());
+			}
+		}
+	}
+	
+	private void grdLines_RowDragMoveCompleted(object sender, FarPoint.Win.Spread.DragMoveCompletedEventArgs e)
+	{
+	    for(int row = 0; row &lt;= grdLines.ActiveSheet.RowCount - 1; row++)
+		{
+	        string recID = grdLines.get_GridText("RecID", row).ToString();
+
+	        if (recID.Trim().Length &gt; 0)
+			{
+	            BusinessLogic[recID].ItemNo = row + 1;
+	        }
+	    }
+	}
+	#endregion
+    #endregion
+
+	#region "Display"
+
+	public override void DisplayLine(Widget item, int Row = -1)
+	{
+		if (Row == -1) {
+			for (int MyLoop = 0; MyLoop &lt;= grdLines.ActiveSheet.Rows.Count - 1; MyLoop++) {
+				if (grdLines.get_GridText("RecID", MyLoop).ToString() == item.RecID) {
+					Row = MyLoop;
+					break;
+				}
+			}
+		}
+
+		if (Row != -1) {
+			// copy col header tag into each cell tag.
+			foreach (FarPoint.Win.Spread.Column column in grdLines.ActiveSheet.Columns) {
+				grdLines.ActiveSheet.Cells[Row, column.Index].Tag = grdLines.ActiveSheet.ColumnHeader.Cells[1, column.Index].Tag;
+			}
+
+			grdLines.set_GridText("RecID", Row, item.RecID);
+			grdLines.set_GridText("Description", Row, item.Description);
+			grdLines.set_GridText("Weight", Row, item.Weight);
+			grdLines.set_GridText("Default", Row, item.IsDefault);
+
+			grdLines.LockColumn(false, "Default", Row);
+			grdLines.LockColumn(false, "Bin", Row);
+		}
+
+	}
+
+	#endregion
+
+	public Widgets()
+	{
+		this.Text = "Widgets";
+	}
+}
+
+#endregion</Code>
+  <ExceptionPolicy>Report</ExceptionPolicy>
+  <Language>CSharp</Language>
+  <ReferenceCollection>
+    <Reference>
+      <RecID>cade67e3-e08d-4bee-bc06-8f4f2b2c9dbd</RecID>
+      <AssemblyFullName>JiwaApplication, Version=7.0.144.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaApplication.dll</AssemblyName>
+      <AssemblyLocation>C:\VSO\Jiwa 6\Jiwa\Built Files\JiwaApplication.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>8839ab10-f70b-4e51-8ea7-9ad60334891d</RecID>
+      <AssemblyFullName>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>mscorlib.dll</AssemblyName>
+      <AssemblyLocation>C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>611195a7-6a0d-478d-83e5-5abc23b10bc7</RecID>
+      <AssemblyFullName>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>0c71ab1a-ed37-4290-8557-bf3c445a7253</RecID>
+      <AssemblyFullName>System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Data.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_32\System.Data\v4.0_4.0.0.0__b77a5c561934e089\System.Data.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>ac176323-4a33-46ed-8f71-8e6e434066d9</RecID>
+      <AssemblyFullName>JiwaODBC, Version=7.0.144.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaODBC.dll</AssemblyName>
+      <AssemblyLocation>C:\VSO\Jiwa 6\Jiwa\Built Files\JiwaODBC.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>47d3d207-7063-48ca-be99-a56da21f872a</RecID>
+      <AssemblyFullName>System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Xml.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>e9c63fb7-811d-43a7-b8ca-48d8fa95e0c6</RecID>
+      <AssemblyFullName>System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Runtime.Serialization.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization\v4.0_4.0.0.0__b77a5c561934e089\System.Runtime.Serialization.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>0b3db3a1-dc96-4065-bb87-f3f792b9427d</RecID>
+      <AssemblyFullName>System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>System.Drawing.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\System.Drawing\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>9408812f-a570-4f21-ac7b-eaeb9a129639</RecID>
+      <AssemblyFullName>Microsoft.SqlServer.Smo, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91</AssemblyFullName>
+      <AssemblyName>Microsoft.SqlServer.Smo.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\Microsoft.SqlServer.Smo\12.0.0.0__89845dcd8080cc91\Microsoft.SqlServer.Smo.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>42afd5bf-e59b-41b0-8420-c85509577df8</RecID>
+      <AssemblyFullName>Microsoft.SqlServer.ConnectionInfo, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91</AssemblyFullName>
+      <AssemblyName>Microsoft.SqlServer.ConnectionInfo.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\Microsoft.SqlServer.ConnectionInfo\12.0.0.0__89845dcd8080cc91\Microsoft.SqlServer.ConnectionInfo.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>530a322c-63aa-41f7-854b-c4d6d05b3287</RecID>
+      <AssemblyFullName>System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Windows.Forms.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>0c1f07ff-25fc-4ac7-80ac-2dbe48fdd00f</RecID>
+      <AssemblyFullName>Infragistics4.Win.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>aaf9b28a-9074-4ae5-ba62-d2c3a7738294</RecID>
+      <AssemblyFullName>Microsoft.VisualBasic, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>Microsoft.VisualBasic.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.VisualBasic\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualBasic.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>1ecc946c-4f1a-4f10-85fe-0e329c4e5298</RecID>
+      <AssemblyFullName>Infragistics4.Win.Misc.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.Misc.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.Misc.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.Misc.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>9b6c62e1-0159-4ad0-b3e4-e85ec877a9f2</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinEditors.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinEditors.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinEditors.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinEditors.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>f2f471b1-fb8a-4229-a87f-a72e22346759</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinExplorerBar.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinExplorerBar.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinExplorerBar.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinExplorerBar.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>fc4897ec-0768-4d82-8cc6-d25c2234cd77</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinTree.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinTree.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinTree.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinTree.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>114e9c45-70de-4e31-8d22-2e6e0d8bbec2</RecID>
+      <AssemblyFullName>FarPoint.Win.Spread, Version=8.35.20151.0, Culture=neutral, PublicKeyToken=327c3516b1b18457</AssemblyFullName>
+      <AssemblyName>FarPoint.Win.Spread.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\FarPoint.Win.Spread\8.35.20151.0__327c3516b1b18457\FarPoint.Win.Spread.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>17d057bf-8740-4b74-8603-047e2dfd3a0a</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinTabControl.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinTabControl.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinTabControl.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinTabControl.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>bba95b1b-1ddb-4234-bd6b-1a185d709832</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinToolbars.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinToolbars.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinToolbars.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinToolbars.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>70e8827a-567a-41a6-81fc-1dea2ce03a71</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinStatusBar.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinStatusBar.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinStatusBar.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinStatusBar.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>c864636a-d9f3-4b49-bfec-0365ecddd88f</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinListView.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinListView.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinListView.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinListView.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>3a0a39fe-ed85-4697-8ef1-b1b2ac4a5095</RecID>
+      <AssemblyFullName>ActiproSoftware.SyntaxEditor.WinForms, Version=12.1.304.0, Culture=neutral, PublicKeyToken=c27e062d3c1a4763</AssemblyFullName>
+      <AssemblyName>ActiproSoftware.SyntaxEditor.WinForms.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\ActiproSoftware.SyntaxEditor.WinForms\12.1.304.0__c27e062d3c1a4763\ActiproSoftware.SyntaxEditor.WinForms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>4c099ce0-cb3a-4175-8bbc-ff670b42445a</RecID>
+      <AssemblyFullName>ZetaHtmlEditControl, Version=1.1.0.3, Culture=neutral, PublicKeyToken=2e2e5ba5da72b6c0</AssemblyFullName>
+      <AssemblyName>ZetaHtmlEditControl.dll</AssemblyName>
+      <AssemblyLocation>C:\VSO\Jiwa 6\Jiwa\Built Files\ZetaHtmlEditControl.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>2037d9c7-64c4-4888-80f8-555de36c102b</RecID>
+      <AssemblyFullName>ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms, Version=12.1.304.0, Culture=neutral, PublicKeyToken=c27e062d3c1a4763</AssemblyFullName>
+      <AssemblyName>ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms\12.1.304.0__c27e062d3c1a4763\ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>df75b913-9452-415d-b227-a4f6bec42d36</RecID>
+      <AssemblyFullName>JiwaEncryption, Version=7.0.144.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaEncryption.dll</AssemblyName>
+      <AssemblyLocation>C:\VSO\Jiwa 6\Jiwa\Built Files\JiwaEncryption.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>5d33c13d-d3c6-4be0-acd0-a6a0c82f2aa0</RecID>
+      <AssemblyFullName>JiwaSendEmail, Version=7.0.144.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaSendEmail.dll</AssemblyName>
+      <AssemblyLocation>C:\VSO\Jiwa 6\Jiwa\Built Files\JiwaSendEmail.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>074bb9cb-eb96-411c-add9-d19f233431c2</RecID>
+      <AssemblyFullName>Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</AssemblyFullName>
+      <AssemblyName>Microsoft.Office.Interop.Outlook.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\Microsoft.Office.Interop.Outlook\15.0.0.0__71e9bce111e9429c\Microsoft.Office.Interop.Outlook.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>3721f0e8-51b9-4fcf-bf6a-6728b14a4bba</RecID>
+      <AssemblyFullName>System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>System.Security.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\System.Security\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Security.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>57470c95-96ef-40d3-ab87-6f5f808e730d</RecID>
+      <AssemblyFullName>Microsoft.SqlServer.Dac, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>Microsoft.SqlServer.Dac.dll</AssemblyName>
+      <AssemblyLocation>C:\VSO\Jiwa 6\Jiwa\Built Files\Microsoft.SqlServer.Dac.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>d56b6a8c-c866-4cc8-b616-7d2d0947114e</RecID>
+      <AssemblyFullName>CrystalDecisions.CrystalReports.Engine, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.CrystalReports.Engine.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\CrystalDecisions.CrystalReports.Engine\13.0.2000.0__692fbea5521e1304\CrystalDecisions.CrystalReports.Engine.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>e4238db1-db8c-4489-91fd-df8d8e3807a9</RecID>
+      <AssemblyFullName>CrystalDecisions.Shared, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.Shared.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\CrystalDecisions.Shared\13.0.2000.0__692fbea5521e1304\CrystalDecisions.Shared.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>2fcc087a-ad5f-4c69-a6a7-903840f426be</RecID>
+      <AssemblyFullName>CrystalDecisions.ReportAppServer.ClientDoc, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.ReportAppServer.ClientDoc.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\CrystalDecisions.ReportAppServer.ClientDoc\13.0.2000.0__692fbea5521e1304\CrystalDecisions.ReportAppServer.ClientDoc.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>cd3537b4-0f93-4fc2-a44b-ee61f6f8fd63</RecID>
+      <AssemblyFullName>CrystalDecisions.ReportAppServer.Controllers, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.ReportAppServer.Controllers.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\CrystalDecisions.ReportAppServer.Controllers\13.0.2000.0__692fbea5521e1304\CrystalDecisions.ReportAppServer.Controllers.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>f5e270c8-6b24-46e9-87a7-d882693a86a7</RecID>
+      <AssemblyFullName>System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Core.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>82743d98-f9d4-49f6-8c92-49c23dd1b2da</RecID>
+      <AssemblyFullName>Infragistics4.Win.AppStylistSupport.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.AppStylistSupport.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.AppStylistSupport.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.AppStylistSupport.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>ef4b2a5f-381d-4f56-be77-36db0d6ba73b</RecID>
+      <AssemblyFullName>JiwaLib, Version=7.0.144.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaLib.dll</AssemblyName>
+      <AssemblyLocation>C:\VSO\Jiwa 6\Jiwa\Built Files\JiwaLib.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>26e1794b-a5e7-41bb-978f-8bdc9a82dbbb</RecID>
+      <AssemblyFullName>CrystalDecisions.Windows.Forms, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.Windows.Forms.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\CrystalDecisions.Windows.Forms\13.0.2000.0__692fbea5521e1304\CrystalDecisions.Windows.Forms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>499f5244-6c75-47b1-bd6f-105c7edf5290</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinSchedule.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinSchedule.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinSchedule.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinSchedule.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>02e75e36-d1a1-4f36-92b5-fb1eaac0eeb9</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinGrid.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinGrid.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinGrid.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinGrid.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>421a0de8-4ebc-4fd7-849d-7b18acdff633</RecID>
+      <AssemblyFullName>Infragistics4.Shared.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Shared.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Shared.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Shared.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>2cb6e4c9-ce78-41f6-8dbd-87b42e2b2a15</RecID>
+      <AssemblyFullName>ActiproSoftware.Shared.WinForms, Version=12.1.304.0, Culture=neutral, PublicKeyToken=c27e062d3c1a4763</AssemblyFullName>
+      <AssemblyName>ActiproSoftware.Shared.WinForms.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\ActiproSoftware.Shared.WinForms\12.1.304.0__c27e062d3c1a4763\ActiproSoftware.Shared.WinForms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>0347a5fd-f4f6-403c-893b-3046324458e8</RecID>
+      <AssemblyFullName>FarPoint.Win, Version=8.35.20151.0, Culture=neutral, PublicKeyToken=327c3516b1b18457</AssemblyFullName>
+      <AssemblyName>FarPoint.Win.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\FarPoint.Win\8.35.20151.0__327c3516b1b18457\FarPoint.Win.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>50324e93-8db3-44e9-aa79-77f95f60d14d</RecID>
+      <AssemblyFullName>CrystalDecisions.ReportAppServer.ReportDefModel, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.ReportAppServer.ReportDefModel.dll</AssemblyName>
+      <AssemblyLocation>C:\windows\assembly\GAC_MSIL\CrystalDecisions.ReportAppServer.ReportDefModel\13.0.2000.0__692fbea5521e1304\CrystalDecisions.ReportAppServer.ReportDefModel.dll</AssemblyLocation>
+    </Reference>
+  </ReferenceCollection>
+  <Documents>
+    <Document>
+      <RecID xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">bff6a4db0dc942bd9a9d                </RecID>
+      <DocumentType xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">
+        <RecID xmlns="JiwaApplication.Documents">BB6E534C-73E3-4706-851D-80FA3661375C</RecID>
+        <ItemNo xmlns="JiwaApplication.Documents">1</ItemNo>
+        <Description xmlns="JiwaApplication.Documents">Default Plugin Document Type</Description>
+        <DefaultType xmlns="JiwaApplication.Documents">true</DefaultType>
+      </DocumentType>
+      <FileID xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML" />
+      <PhysicalFileName xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">README.txt</PhysicalFileName>
+      <Description xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">Instructions for installation - Read this first.</Description>
+      <LastSavedDateTime xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">2015-12-05T11:35:49.5</LastSavedDateTime>
+      <LastModifiedByStaffMember xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">
+        <RecID xmlns="Entities.Staff">ZZZZZZZZZZ0000000000</RecID>
+        <StaffID xmlns="Entities.Staff">ZZZZZZZZZZ0000000000</StaffID>
+        <UserName xmlns="Entities.Staff">Admin</UserName>
+        <Title xmlns="Entities.Staff" />
+        <FirstName xmlns="Entities.Staff">Admin</FirstName>
+        <Surname xmlns="Entities.Staff" />
+        <EmailAddress xmlns="Entities.Staff">mikes@jiwa.com.au</EmailAddress>
+        <EmailDisplayName xmlns="Entities.Staff">Mike Sheen</EmailDisplayName>
+        <SMTPUsername xmlns="Entities.Staff">mikes@jiwa.com.au</SMTPUsername>
+        <SMTPPassword xmlns="Entities.Staff">C817116B4522B19480AE4FB798B1D1DE</SMTPPassword>
+      </LastModifiedByStaffMember>
+      <FileBinary xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">MS4gT24gdGhlIGRvY3VtZW50cyB0YWIgb2YgdGhpcyBwbHVnaW4sIHNhdmUgdGhlIHdpZGdldHMuc3FsIHNjcmlwdCB0byB0aGUgZmlsZXN5c3RlbSBhbmQgdGhlbiBydW4gaXQgdXNpbmcgTWFuYWdlbWVudCBTdHVkaW8uICBNYWtlIHN1cmUgeW91IHNlbGVjdCB0aGUgcmlnaHQgZGF0YWJhc2UNCjIuIEV4aXQgSml3YQ0KMy4gTG9nb24gdG8gSml3YQ0KNC4gT3BlbiBNZW51IE1haW50ZW5hbmNlIGFuZCBhZGQgdGhlIFdpZGdldHMgZm9ybSB0byB0aGUgbWVudS4gU2F2ZS4gQ2xvc2UgTWVudSBNYWludGVuYW5jZS4NCjUuIFNlbGVjdCB0aGUgV2lkZ2V0cyBmb3JtIGZyb20gdGhlIG1lbnU=</FileBinary>
+      <ItemNo xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">1</ItemNo>
+    </Document>
+    <Document>
+      <RecID xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">89f109cea80c4379bdbb                </RecID>
+      <DocumentType xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">
+        <RecID xmlns="JiwaApplication.Documents">BB6E534C-73E3-4706-851D-80FA3661375C</RecID>
+        <ItemNo xmlns="JiwaApplication.Documents">1</ItemNo>
+        <Description xmlns="JiwaApplication.Documents">Default Plugin Document Type</Description>
+        <DefaultType xmlns="JiwaApplication.Documents">true</DefaultType>
+      </DocumentType>
+      <FileID xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML" />
+      <PhysicalFileName xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">Widget.sql</PhysicalFileName>
+      <Description xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">SQL Script to create table, and register new form in SY_Forms</Description>
+      <LastSavedDateTime xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">2015-12-05T11:56:19.077</LastSavedDateTime>
+      <LastModifiedByStaffMember xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">
+        <RecID xmlns="Entities.Staff">ZZZZZZZZZZ0000000000</RecID>
+        <StaffID xmlns="Entities.Staff">ZZZZZZZZZZ0000000000</StaffID>
+        <UserName xmlns="Entities.Staff">Admin</UserName>
+        <Title xmlns="Entities.Staff" />
+        <FirstName xmlns="Entities.Staff">Admin</FirstName>
+        <Surname xmlns="Entities.Staff" />
+        <EmailAddress xmlns="Entities.Staff">mikes@jiwa.com.au</EmailAddress>
+        <EmailDisplayName xmlns="Entities.Staff">Mike Sheen</EmailDisplayName>
+        <SMTPUsername xmlns="Entities.Staff">mikes@jiwa.com.au</SMTPUsername>
+        <SMTPPassword xmlns="Entities.Staff">C817116B4522B19480AE4FB798B1D1DE</SMTPPassword>
+      </LastModifiedByStaffMember>
+      <FileBinary xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">Q1JFQVRFIFRBQkxFIFdpZGdldA0KKA0KCVJlY0lEIHVuaXF1ZWlkZW50aWZpZXIgTk9UIE5VTEwsDQoJRGVzY3JpcHRpb24gVkFSQ0hBUigyNTUpIE5PVCBOVUxMLA0KCVdlaWdodCBJTlQgTk9UIE5VTEwsDQoJSXNEZWZhdWx0IEJJVCBOT1QgTlVMTCwNCglJdGVtTm8gSU5UIE5PVCBOVUxMLA0KCVJvd0hhc2ggVGltZXN0YW1wDQoJQ09OU1RSQUlOVCBbUEtfV2lkZ2V0X1JlY0lEXSBQUklNQVJZIEtFWSBDTFVTVEVSRUQgKFtSZWNJRF0gQVNDKQ0KKQ0KR08NCg0KQ1JFQVRFIFVOSVFVRSBJTkRFWCBbSVhfV2lkZ2V0X0Rlc2NyaXB0aW9uXSBPTiBXaWRnZXQoRGVzY3JpcHRpb24pDQpHTw0KDQpJTlNFUlQgSU5UTyBXaWRnZXQoUmVjSUQsIERlc2NyaXB0aW9uLCBXZWlnaHQsIElzRGVmYXVsdCwgSXRlbU5vKQ0KU0VMRUNUIE5ld0lEKCksICdEZWZhdWx0JywgMSwgMSwgMQ0KR08NCg0KSUYgTk9UIEVYSVNUUyhTRUxFQ1QgVE9QIDEgKiBGUk9NIFNZX0Zvcm1zIFdIRVJFIENsYXNzTmFtZSA9ICdXaWRnZXRzJykNCglJTlNFUlQgSU5UTyBTWV9Gb3JtcyhDbGFzc05hbWUsIERlc2NyaXB0aW9uLCBGb3JtVHlwZSwgSGVscEZpbGVOYW1lLCBIZWxwUGFnZU5hbWUsIEFzc2VtYmx5RnVsbE5hbWUpDQoJU0VMRUNUICdXaWRnZXRzJywgJ1dpZGdldCBTYW1wbGUgTGlzdCBNYWludGVuYW5jZScsIDIsICcnLCAnJywNCgkoU0VMRUNUIFRPUCAxIFJlY0lEIEZST00gU1lfUGx1Z2luIFdIRVJFIE5hbWUgPSAnU2FtcGxlIFBsdWdpbiAtIExpc3QgTWFpbnRlbmFuY2UnKQ0KR08NCg0KSU5TRVJUIElOVE8gU1lfRm9ybXNBYnN0cmFjdFBlcm1pc3Npb25zKFJlY0lELCBTWV9Gb3Jtc19DbGFzc05hbWUsIE5hbWUsIERlc2NyaXB0aW9uLCBJdGVtTm8pDQpTRUxFQ1QgTkVXSUQoKSwgJ1dpZGdldHMnLCAnTG9hZCcsICdMb2FkIG9mIHRoZSBmb3JtJywgMQ0KDQpJTlNFUlQgSU5UTyBTWV9Gb3Jtc0Fic3RyYWN0UGVybWlzc2lvbnMoUmVjSUQsIFNZX0Zvcm1zX0NsYXNzTmFtZSwgTmFtZSwgRGVzY3JpcHRpb24sIEl0ZW1ObykNClNFTEVDVCBORVdJRCgpLCAnV2lkZ2V0cycsICdFZGl0JywgJ0VkaXQgb2YgdGhlIGZvcm0nLCAyDQpHTw0KDQpncmFudF9hbGxfdXNlcl90YWJsZXMNCg==</FileBinary>
+      <ItemNo xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">2</ItemNo>
+    </Document>
+  </Documents>
+  <Images>
+    <Image>
+      <RecID xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">f7dbd2c1-ff92-488c-9983-b9be04db7c88</RecID>
+      <LastSavedDateTime xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">2015-12-05T12:00:08.127</LastSavedDateTime>
+      <Picture xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">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</Picture>
+      <ItemNo xmlns="JiwaFinancials.Jiwa.JiwaApplication.Plugin.XML">1</ItemNo>
+    </Image>
+  </Images>
+</JiwaDocument>
