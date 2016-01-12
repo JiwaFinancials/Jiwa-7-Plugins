@@ -2,7 +2,7 @@
 <JiwaDocument xmlns:jiwa="http://www.jiwa.com.au/xml/schemas" Type="JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin">
   <RecID>b0fe994f-365e-4108-ba56-3f0232f3f6ae</RecID>
   <Name>Add Running Total Column to General Ledger Transactions Tab</Name>
-  <Description>XXXThis plugin does the following:&amp;#13;&amp;#10;  1.  Adds a check box titled 'Running Totals' to General Ledger Maintenance -&gt; Transactions.&amp;#13;&amp;#10;  2.  When the checkbox is ticked, a column appears in the transactions grid showing the running total as per the currently selected ordering.  Sorting of the grid is disabled.&amp;#13;&amp;#10;  3.  Loading or scrolling to a different account un-ticks the 'Running Totals' check box</Description>
+  <Description>This plugin does the following:&amp;#13;&amp;#10;  1.  Adds a check box titled 'Running Totals' to General Ledger Maintenance -&gt; Transactions.&amp;#13;&amp;#10;  2.  When the checkbox is ticked, a column appears in the transactions grid showing the running total as per the currently selected ordering.  Sorting of the grid is disabled.&amp;#13;&amp;#10;  3.  Loading or scrolling to a different account un-ticks the 'Running Totals' check box</Description>
   <IsEnabled>true</IsEnabled>
   <IsIsolatedToOwnAppDomain>false</IsIsolatedToOwnAppDomain>
   <ExecutionOrder>0</ExecutionOrder>
@@ -36,7 +36,141 @@ public class FormPlugin : System.MarshalByRefObject, JiwaFinancials.Jiwa.JiwaApp
 
     public void Setup(JiwaFinancials.Jiwa.JiwaApplication.IJiwaForm JiwaForm, JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin Plugin)
     {
+		JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm generalLedgerForm = (JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm) JiwaForm;
+		
+		//Create checkbox and add to form
+		Infragistics.Win.UltraWinEditors.UltraCheckEditor ShowRunningTotalUltraCheckEditor = new Infragistics.Win.UltraWinEditors.UltraCheckEditor();
+		ShowRunningTotalUltraCheckEditor.Name = "ShowRunningTotalUltraCheckEditor";
+		ShowRunningTotalUltraCheckEditor.Text = "Show Running Total";
+		ShowRunningTotalUltraCheckEditor.CheckStateChanged += ShowRunningTotalUltraCheckEditor_CheckStateChanged;
+		ShowRunningTotalUltraCheckEditor.Width = 140;
+		ShowRunningTotalUltraCheckEditor.Appearance.BackColor = generalLedgerForm.FilterByDateUltraOptionSet.Appearance.BackColor;
+		generalLedgerForm.UltraPanel3.ClientArea.Controls.Add(ShowRunningTotalUltraCheckEditor); 
+		
+		generalLedgerForm.Shown += generalLedgerForm_Shown;
+		generalLedgerForm.GeneralLedger.ReadEnd += GeneralLedger_ReadEnd;
     }
+	
+	private void generalLedgerForm_Shown(object sender, System.EventArgs e)
+	{
+		JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm generalLedgerForm = (JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm) sender;	
+		Infragistics.Win.UltraWinEditors.UltraCheckEditor ShowRunningTotalUltraCheckEditor = (Infragistics.Win.UltraWinEditors.UltraCheckEditor) generalLedgerForm.UltraPanel3.ClientArea.Controls["ShowRunningTotalUltraCheckEditor"];
+		if (ShowRunningTotalUltraCheckEditor != null)
+		{  //Position the control on the form
+			ShowRunningTotalUltraCheckEditor.Left = (generalLedgerForm.TransactionsJiwaGrid.Left + generalLedgerForm.TransactionsJiwaGrid.Width) - ShowRunningTotalUltraCheckEditor.Width;
+			ShowRunningTotalUltraCheckEditor.Top = generalLedgerForm.TransactionsJiwaGrid.Top - ShowRunningTotalUltraCheckEditor.Height - 10;
+			ShowRunningTotalUltraCheckEditor.Anchor = (AnchorStyles.Top | AnchorStyles.Right);			
+		}
+	}
+
+	private void ShowRunningTotalUltraCheckEditor_CheckStateChanged(object sender, System.EventArgs e)
+	{
+		Infragistics.Win.UltraWinEditors.UltraCheckEditor ShowRunningTotalUltraCheckEditor = (Infragistics.Win.UltraWinEditors.UltraCheckEditor) sender;
+		JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm generalLedgerForm = (JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm) JiwaFinancials.Jiwa.JiwaApplication.Manager.GetOwnerForm(ShowRunningTotalUltraCheckEditor); 
+		JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid TransactionsJiwaGrid = (JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid) generalLedgerForm.TransactionsJiwaGrid;
+		bool columnExists = false;
+		foreach (FarPoint.Win.Spread.Column column in TransactionsJiwaGrid.ActiveSheet.Columns)
+		{
+			if (column.Tag.ToString() == "RunningTotal")
+			{
+				columnExists = true;
+				break;
+			}
+		}
+		
+		if (ShowRunningTotalUltraCheckEditor.Checked == true)
+		{
+			if (columnExists != true)
+			{	//Show the column
+				TransactionsJiwaGrid.AddColumn("RunningTotal", new JiwaFinancials.Jiwa.JiwaApplication.JiwaManageGrid.JiwaCurrencyCellType(), "Running Total", 10, false, true, true, true, 255 , true);
+				TransactionsJiwaGrid.AllowSorting = false;
+				DisplayRunningTotal(TransactionsJiwaGrid, generalLedgerForm.GeneralLedger.Sign == JiwaFinancials.Jiwa.JiwaGeneralLedger.GeneralLedger.GeneralLedgerSign.Credit);
+			}			
+		}
+		else
+		{
+			if (columnExists)
+			{  //Remove the column
+				TransactionsJiwaGrid.ActiveSheet.Columns.Remove(TransactionsJiwaGrid.ActiveSheet.Columns["RunningTotal"].Index, 1);
+				TransactionsJiwaGrid.AllowSorting = true;
+			}
+		}
+	}
+	
+	private void DisplayRunningTotal(JiwaFinancials.Jiwa.JiwaApplication.Controls.JiwaGrid myGrid, bool expectedSignIsCredit)
+	{
+		//Defensive - check for column
+		bool columnExists = false;
+		foreach (FarPoint.Win.Spread.Column column in myGrid.ActiveSheet.Columns)
+		{
+			if (column.Tag.ToString() == "RunningTotal")
+			{
+				columnExists = true;
+				break;
+			}
+		}
+		
+		if(columnExists)
+		{
+			decimal debitAmount;
+			decimal creditAmount;
+			bool isCreditAmount;	
+			decimal runningTotal = 0;
+			for (int myLoop = 0; myLoop &lt;= myGrid.ActiveSheet.RowCount - 1; myLoop++)
+			{
+				debitAmount = 0;
+				creditAmount = 0;
+				
+				decimal.Parse(myGrid.get_GridText("Debit", myLoop).ToString());
+				
+                debitAmount = decimal.Parse(myGrid.get_GridText("Debit", myLoop).ToString());
+                creditAmount = decimal.Parse(myGrid.get_GridText("Credit", myLoop).ToString());
+				if(creditAmount != 0)				
+					isCreditAmount = true;
+				else
+					isCreditAmount = false;
+				
+				if(expectedSignIsCredit)
+				{
+					if(isCreditAmount)
+					{
+						runningTotal += creditAmount;
+					}
+					else
+					{
+						debitAmount *= -1;
+						runningTotal += debitAmount;
+					}
+				}
+				else
+				{
+					if(isCreditAmount)
+					{
+						creditAmount *= -1;	
+						runningTotal += creditAmount;
+					}
+					else
+					{
+						runningTotal += debitAmount;
+					}
+				}
+				
+				myGrid.set_GridText("RunningTotal", myLoop, runningTotal);
+			}
+		}
+		
+	}
+	
+	private void GeneralLedger_ReadEnd(object sender, System.EventArgs e)
+	{
+		JiwaFinancials.Jiwa.JiwaGeneralLedger.GeneralLedger generalLedgerObject = (JiwaFinancials.Jiwa.JiwaGeneralLedger.GeneralLedger) sender;
+		JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm generalLedgerForm = (JiwaFinancials.Jiwa.JiwaGeneralLedgerUI.MainForm) generalLedgerObject.Client;
+		Infragistics.Win.UltraWinEditors.UltraCheckEditor ShowRunningTotalUltraCheckEditor = (Infragistics.Win.UltraWinEditors.UltraCheckEditor) generalLedgerForm.UltraPanel3.ClientArea.Controls["ShowRunningTotalUltraCheckEditor"];
+		if (ShowRunningTotalUltraCheckEditor != null)
+			ShowRunningTotalUltraCheckEditor.Checked = false;
+	}
+
+
 }
 #endregion
 
