@@ -1,0 +1,3 @@
+# Plugin Sample - Add Lines to a Quote
+This plugin demonstrates how to programmatically add lines to a quote.  A button is added to the ribbon of the Quote Entry form.  Clicking on the button will add a series of parts to the quote that is on the screen.  For this sample, the part nos. to add are hardcoded in the form of a list, but alternatively they could be read in from an external source, such as an excel spreadsheet.  Finally, the button is only enabled for non-closed quotes.
+  
