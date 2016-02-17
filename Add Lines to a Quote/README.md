@@ -1,3 +1,3 @@
-# Plugin Sample - GRN Duty Rename
-This plugin changes the "Duty" text in the cartage grid to "Import Levy".  In the handler code, we start by obtaining the form via the "sender" of the event - this allows us to reach the grid of interest.  Then, we iterate through the grid looking for the "Duty" row.  Finally, having found the row we want to modify, we use GridText to set the text of the cell at column "RowHeading", row "dutyRowNo".
+# Plugin Sample - Add Lines to a Quote
+This plugin demonstrates how to programmatically add lines to a quote.  A button is added to the ribbon of the Quote Entry form.  Clicking on the button will add a series of parts to the quote that is on the screen.  For this sample, the part nos. to add are hardcoded in the form of a list, but alternatively they could be read in from an external source, such as an excel spreadsheet.  Finally, the button is only enabled for non-closed quotes.
   
