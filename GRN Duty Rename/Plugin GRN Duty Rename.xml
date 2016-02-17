@@ -1,0 +1,473 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<JiwaDocument xmlns:jiwa="http://www.jiwa.com.au/xml/schemas" Type="JiwaFinancials.Jiwa.JiwaApplication.Plugin.Plugin">
+  <RecID>ac59467e-0b31-41be-8b87-1903f9ef7929</RecID>
+  <Name>GRN Duty Rename</Name>
+  <Description>This plugin changes the "Duty" text in the cartage grid to "Import Levy".</Description>
+  <IsEnabled>true</IsEnabled>
+  <IsIsolatedToOwnAppDomain>false</IsIsolatedToOwnAppDomain>
+  <ExecutionOrder>0</ExecutionOrder>
+  <Author>Jiwa Financials</Author>
+  <Version>7.0.149.0</Version>
+  <Code>Imports JiwaFinancials.Jiwa
+Imports Microsoft.VisualBasic
+Imports System.Windows.Forms
+Imports System.Data.SqlClient
+Imports System.Drawing
+Imports System.Data
+
+Public Class FormPlugin
+    Inherits System.MarshalByRefObject
+    Implements JiwaApplication.IJiwaFormPlugin
+
+    Public Overrides Function InitializeLifetimeService() As Object
+        ' returning null here will prevent the lease manager
+        ' from deleting the Object.
+        Return Nothing
+    End Function
+
+    Public Sub SetupBeforeHandlers(ByVal JiwaForm As JiwaApplication.IJiwaForm, ByVal Plugin As JiwaApplication.Plugin.Plugin) Implements JiwaApplication.IJiwaFormPlugin.SetupBeforeHandlers
+    End Sub
+
+    Public Sub Setup(ByVal JiwaForm As JiwaApplication.IJiwaForm, ByVal Plugin As JiwaApplication.Plugin.Plugin) Implements JiwaApplication.IJiwaFormPlugin.Setup
+		Dim GRNFormObject As JiwaInvReceivalUI.MainForm = JiwaForm
+		AddHandler GRNFormObject.Shown, AddressOf GRNFormObject_Shown
+    End Sub
+	
+	Public Sub GRNFormObject_Shown(sender As Object, e As System.EventArgs)
+		Dim GRNFormObject As JiwaInvReceivalUI.MainForm = sender
+		
+		With GRNFormObject.CartageJiwaGrid
+			Dim rowKey As String = ""
+			Dim dutyRowNo As Integer = -1
+			
+			'Find the Duty row
+			For MyLoop As Integer = 0 To .ActiveSheet.RowCount - 1 'Grids are 0-based - the - 1 accounts for this.
+				rowKey = .GridText("Key", MyLoop)
+				If rowKey = "Duty" Then
+					dutyRowNo = MyLoop
+					Exit For 'We've found the row we are interested in.
+				End If
+			Next
+			
+			'Assuming we found the Duty row OK, we can now set the text of the "RowHeading" column for that row.
+			.GridText("RowHeading", dutyRowNo) = "Import Levy"
+		End With
+	End Sub
+End Class
+
+Public Class BusinessLogicPlugin
+    Inherits System.MarshalByRefObject
+    Implements JiwaApplication.IJiwaBusinessLogicPlugin
+
+    Public Overrides Function InitializeLifetimeService() As Object
+        ' returning null here will prevent the lease manager
+        ' from deleting the Object.
+        Return Nothing
+    End Function
+
+    Public Sub Setup(ByVal JiwaBusinessLogic As JiwaApplication.IJiwaBusinessLogic, ByVal Plugin As JiwaApplication.Plugin.Plugin) Implements JiwaApplication.IJiwaBusinessLogicPlugin.Setup
+    End Sub
+
+End Class
+
+Public Class ApplicationManagerPlugin
+    Inherits System.MarshalByRefObject
+    Implements JiwaApplication.IJiwaApplicationManagerPlugin
+
+    Public Overrides Function InitializeLifetimeService() As Object
+        ' returning null here will prevent the lease manager
+        ' from deleting the Object.
+        Return Nothing
+    End Function
+
+    Public Sub Setup(ByVal Plugin As JiwaApplication.Plugin.Plugin) Implements JiwaApplication.IJiwaApplicationManagerPlugin.Setup
+    End Sub
+
+End Class
+
+Public Class CustomFieldPlugin
+    Inherits System.MarshalByRefObject
+    Implements JiwaApplication.IJiwaCustomFieldPlugin
+
+    Public Overrides Function InitializeLifetimeService() As Object
+        ' returning null here will prevent the lease manager
+        ' from deleting the Object.
+        Return Nothing
+    End Function
+
+    Public Sub FormatCell(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Col As Integer, ByVal Row As Integer, ByVal HostObject As JiwaApplication.IJiwaCustomFieldValues, ByVal CustomField As JiwaApplication.CustomFields.CustomField, ByVal CustomFieldValue As JiwaApplication.CustomFields.CustomFieldValue) Implements JiwaApplication.IJiwaCustomFieldPlugin.FormatCell
+    End Sub
+
+    Public Sub ReadData(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Row As Integer, ByVal HostObject As JiwaApplication.IJiwaCustomFieldValues, ByVal CustomField As JiwaApplication.CustomFields.CustomField, ByVal CustomFieldValue As JiwaApplication.CustomFields.CustomFieldValue) Implements JiwaApplication.IJiwaCustomFieldPlugin.ReadData
+    End Sub
+
+    Public Sub ButtonClicked(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Col As Integer, ByVal Row As Integer, ByVal HostObject As JiwaApplication.IJiwaCustomFieldValues, ByVal CustomField As JiwaApplication.CustomFields.CustomField, ByVal CustomFieldValue As JiwaApplication.CustomFields.CustomFieldValue) Implements JiwaApplication.IJiwaCustomFieldPlugin.ButtonClicked
+    End Sub
+
+End Class
+
+Public Class LineCustomFieldPlugin
+    Inherits System.MarshalByRefObject
+    Implements JiwaApplication.IJiwaLineCustomFieldPlugin
+
+    Public Overrides Function InitializeLifetimeService() As Object
+        ' returning null here will prevent the lease manager
+        ' from deleting the Object.
+        Return Nothing
+    End Function
+
+    Public Sub FormatCell(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Col As Integer, ByVal Row As Integer, ByVal HostItem As JiwaApplication.IJiwaLineCustomFieldValues, ByVal CustomField As JiwaApplication.CustomFields.CustomField, ByVal CustomFieldValue As JiwaApplication.CustomFields.CustomFieldValue) Implements JiwaApplication.IJiwaLineCustomFieldPlugin.FormatCell
+    End Sub
+
+    Public Sub ReadData(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Row As Integer, ByVal HostItem As JiwaApplication.IJiwaLineCustomFieldValues, ByVal CustomField As JiwaApplication.CustomFields.CustomField, ByVal CustomFieldValue As JiwaApplication.CustomFields.CustomFieldValue) Implements JiwaApplication.IJiwaLineCustomFieldPlugin.ReadData
+    End Sub
+
+    Public Sub ButtonClicked(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Col As Integer, ByVal Row As Integer, ByVal HostItem As JiwaApplication.IJiwaLineCustomFieldValues, ByVal CustomField As JiwaApplication.CustomFields.CustomField, ByVal CustomFieldValue As JiwaApplication.CustomFields.CustomFieldValue) Implements JiwaApplication.IJiwaLineCustomFieldPlugin.ButtonClicked
+    End Sub
+
+End Class
+
+Public Class SystemSettingPlugin
+    Inherits System.MarshalByRefObject
+    Implements JiwaApplication.IJiwaSystemSettingPlugin
+
+    Public Overrides Function InitializeLifetimeService() As Object
+        ' returning null here will prevent the lease manager
+        ' from deleting the Object.
+        Return Nothing
+    End Function
+
+    Public Sub FormatCell(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Col As Integer, ByVal Row As Integer, ByVal SystemSetting As JiwaApplication.SystemSettings.Setting) Implements JiwaApplication.IJiwaSystemSettingPlugin.FormatCell
+    End Sub
+
+    Public Sub ReadData(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Row As Integer, ByVal SystemSetting As JiwaApplication.SystemSettings.Setting) Implements JiwaApplication.IJiwaSystemSettingPlugin.ReadData
+    End Sub
+
+    Public Sub ButtonClicked(ByVal BusinessLogicHost As JiwaApplication.IJiwaBusinessLogic, ByVal GridObject As JiwaApplication.Controls.JiwaGrid, ByVal FormObject As JiwaApplication.IJiwaForm, ByVal Col As Integer, ByVal Row As Integer, ByVal SystemSetting As JiwaApplication.SystemSettings.Setting) Implements JiwaApplication.IJiwaSystemSettingPlugin.ButtonClicked
+    End Sub
+
+End Class
+
+Public Class ScheduledExecutionPlugin
+    Inherits System.MarshalByRefObject
+    Implements JiwaApplication.IJiwaScheduledExecutionPlugin
+
+    Public Sub Execute(ByVal Plugin As JiwaApplication.Plugin.Plugin, ByVal Schedule As JiwaApplication.Schedule.Schedule) Implements JiwaApplication.IJiwaScheduledExecutionPlugin.Execute
+
+    End Sub
+
+    Public Sub OnServiceStart(ByVal Plugin As JiwaApplication.Plugin.Plugin) Implements JiwaApplication.IJiwaScheduledExecutionPlugin.OnServiceStart
+
+    End Sub
+
+    Public Sub OnServiceStopping(ByVal Plugin As JiwaApplication.Plugin.Plugin) Implements JiwaApplication.IJiwaScheduledExecutionPlugin.OnServiceStopping
+
+    End Sub
+End Class
+</Code>
+  <ExceptionPolicy>Report</ExceptionPolicy>
+  <Language>VisualBasic</Language>
+  <PluginFormCollection>
+    <PluginForm>
+      <RecID>676a3ccf-6a9f-40ca-af12-de52b2e4648f</RecID>
+      <Description>Goods Received Note</Description>
+      <ClassName>JiwaFinancials.Jiwa.JiwaInvReceivalUI.MainForm</ClassName>
+    </PluginForm>
+  </PluginFormCollection>
+  <ReferenceCollection>
+    <Reference>
+      <RecID>d8e4182c-5cc2-44b2-acc1-55453a359b37</RecID>
+      <AssemblyFullName>JiwaApplication, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaApplication.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaApplication.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>9b416220-b13f-4753-9d50-84e573204997</RecID>
+      <AssemblyFullName>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>mscorlib.dll</AssemblyName>
+      <AssemblyLocation>C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>e6df94cc-dafc-4ef9-965b-06d542277ccd</RecID>
+      <AssemblyFullName>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>39d3267f-0f61-4d75-aea5-44f3fd58f82f</RecID>
+      <AssemblyFullName>System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Data.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_32\System.Data\v4.0_4.0.0.0__b77a5c561934e089\System.Data.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>707dedb8-67d0-40a1-b7c7-1243b3daeb9d</RecID>
+      <AssemblyFullName>JiwaODBC, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaODBC.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaODBC.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>6dce6df0-607f-4ee0-bb15-a996474bd87f</RecID>
+      <AssemblyFullName>System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Xml.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>b2fd62ae-2a9e-448f-8104-a85d84365f34</RecID>
+      <AssemblyFullName>System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Runtime.Serialization.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization\v4.0_4.0.0.0__b77a5c561934e089\System.Runtime.Serialization.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>bedca9c1-a63a-467d-a400-6feab6504b03</RecID>
+      <AssemblyFullName>System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>System.Drawing.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Drawing\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>324f6aec-7575-464e-b3f0-ed6d9f614e3f</RecID>
+      <AssemblyFullName>Microsoft.SqlServer.Smo, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91</AssemblyFullName>
+      <AssemblyName>Microsoft.SqlServer.Smo.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\Microsoft.SqlServer.Smo\12.0.0.0__89845dcd8080cc91\Microsoft.SqlServer.Smo.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>bfec5f45-7ab5-49b9-b0b4-f7f26ba67d48</RecID>
+      <AssemblyFullName>Microsoft.SqlServer.ConnectionInfo, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91</AssemblyFullName>
+      <AssemblyName>Microsoft.SqlServer.ConnectionInfo.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\Microsoft.SqlServer.ConnectionInfo\12.0.0.0__89845dcd8080cc91\Microsoft.SqlServer.ConnectionInfo.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>d1c6a8f6-edc7-4b17-9093-0f5b691cc7d6</RecID>
+      <AssemblyFullName>System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Windows.Forms.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>5449bcec-391d-4cfd-ae78-029a4a731dba</RecID>
+      <AssemblyFullName>Infragistics4.Win.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>2354ee06-4ba6-42bf-8bec-1d0f9a48d78e</RecID>
+      <AssemblyFullName>Microsoft.VisualBasic, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>Microsoft.VisualBasic.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.VisualBasic\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualBasic.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>b12b14b8-5489-4f71-87e7-62dcdec69200</RecID>
+      <AssemblyFullName>Infragistics4.Win.Misc.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.Misc.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.Misc.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.Misc.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>3c9f86e5-a3f8-47dd-be1d-65470d92ff34</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinEditors.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinEditors.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinEditors.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinEditors.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>27c9e357-b52d-48a4-b5a1-ee3d7e0a8f3f</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinExplorerBar.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinExplorerBar.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinExplorerBar.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinExplorerBar.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>0342c8d6-f8b8-4194-8814-8d214c246b91</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinTree.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinTree.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinTree.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinTree.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>a87a0f17-54c2-4b10-b4d8-3c26bb23ac24</RecID>
+      <AssemblyFullName>FarPoint.Win.Spread, Version=8.35.20151.0, Culture=neutral, PublicKeyToken=327c3516b1b18457</AssemblyFullName>
+      <AssemblyName>FarPoint.Win.Spread.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\FarPoint.Win.Spread\8.35.20151.0__327c3516b1b18457\FarPoint.Win.Spread.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>8f361013-e166-496d-9eee-3f10fd6e425d</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinTabControl.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinTabControl.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinTabControl.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinTabControl.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>36246c3e-ced9-4e1b-bf0b-e44b36b1e527</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinToolbars.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinToolbars.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinToolbars.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinToolbars.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>1cb114b5-1d1a-4a09-8333-884e6a6be548</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinStatusBar.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinStatusBar.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinStatusBar.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinStatusBar.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>5437e41d-d585-48f9-ab6f-1b9120b155a4</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinListView.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinListView.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinListView.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinListView.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>823837a6-e8f4-4a1f-8eb1-a63f64d2a1ec</RecID>
+      <AssemblyFullName>ActiproSoftware.SyntaxEditor.WinForms, Version=12.1.304.0, Culture=neutral, PublicKeyToken=c27e062d3c1a4763</AssemblyFullName>
+      <AssemblyName>ActiproSoftware.SyntaxEditor.WinForms.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\ActiproSoftware.SyntaxEditor.WinForms\12.1.304.0__c27e062d3c1a4763\ActiproSoftware.SyntaxEditor.WinForms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>d08dbbfd-ad07-4265-8f92-e591e6b75c92</RecID>
+      <AssemblyFullName>ZetaHtmlEditControl, Version=1.1.0.3, Culture=neutral, PublicKeyToken=2e2e5ba5da72b6c0</AssemblyFullName>
+      <AssemblyName>ZetaHtmlEditControl.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\ZetaHtmlEditControl.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>cf25634e-8acb-4d50-9b91-734cf9eace00</RecID>
+      <AssemblyFullName>ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms, Version=12.1.304.0, Culture=neutral, PublicKeyToken=c27e062d3c1a4763</AssemblyFullName>
+      <AssemblyName>ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms\12.1.304.0__c27e062d3c1a4763\ActiproSoftware.SyntaxEditor.Addons.DotNet.WinForms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>950196ac-8e02-48e2-a75e-af063f45aa57</RecID>
+      <AssemblyFullName>JiwaEncryption, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaEncryption.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaEncryption.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>d0095cc1-3aac-4037-9006-335891baeec6</RecID>
+      <AssemblyFullName>JiwaSendEmail, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaSendEmail.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaSendEmail.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>4b5ee865-7bfb-4b7b-9a9f-79eb107f35c7</RecID>
+      <AssemblyFullName>Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</AssemblyFullName>
+      <AssemblyName>Microsoft.Office.Interop.Outlook.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\Microsoft.Office.Interop.Outlook\15.0.0.0__71e9bce111e9429c\Microsoft.Office.Interop.Outlook.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>37472a54-dab0-49f9-b639-1c5a22a975ab</RecID>
+      <AssemblyFullName>System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>System.Security.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Security\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Security.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>c3c057bc-a00e-4fea-876b-ebee90c77a5e</RecID>
+      <AssemblyFullName>Microsoft.SqlServer.Dac, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</AssemblyFullName>
+      <AssemblyName>Microsoft.SqlServer.Dac.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\Microsoft.SqlServer.Dac.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>d5158431-7544-43e7-b37f-6883e69ce363</RecID>
+      <AssemblyFullName>CrystalDecisions.CrystalReports.Engine, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.CrystalReports.Engine.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\CrystalDecisions.CrystalReports.Engine\13.0.2000.0__692fbea5521e1304\CrystalDecisions.CrystalReports.Engine.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>4047fc75-0f05-4c55-9a2d-efb73bc9c42a</RecID>
+      <AssemblyFullName>CrystalDecisions.Shared, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.Shared.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\CrystalDecisions.Shared\13.0.2000.0__692fbea5521e1304\CrystalDecisions.Shared.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>5f8ddae2-7a4e-4ece-8ff4-73c082934a6e</RecID>
+      <AssemblyFullName>CrystalDecisions.ReportAppServer.ClientDoc, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.ReportAppServer.ClientDoc.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\CrystalDecisions.ReportAppServer.ClientDoc\13.0.2000.0__692fbea5521e1304\CrystalDecisions.ReportAppServer.ClientDoc.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>50a49932-a558-4a1f-bcf0-120220da0c42</RecID>
+      <AssemblyFullName>CrystalDecisions.ReportAppServer.Controllers, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.ReportAppServer.Controllers.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\CrystalDecisions.ReportAppServer.Controllers\13.0.2000.0__692fbea5521e1304\CrystalDecisions.ReportAppServer.Controllers.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>6bfd614f-5ee1-4464-b766-a94d30b539d8</RecID>
+      <AssemblyFullName>System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</AssemblyFullName>
+      <AssemblyName>System.Core.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>b1850d0f-af49-4b27-bf8e-f1c82bc7733e</RecID>
+      <AssemblyFullName>Infragistics4.Win.AppStylistSupport.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.AppStylistSupport.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.AppStylistSupport.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.AppStylistSupport.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>6425dd20-11ae-402f-bd7b-44a1ad2f4c01</RecID>
+      <AssemblyFullName>JiwaLib, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaLib.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaLib.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>d7dcffcc-72c8-4846-a402-c4febb47f5f3</RecID>
+      <AssemblyFullName>CrystalDecisions.Windows.Forms, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.Windows.Forms.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\CrystalDecisions.Windows.Forms\13.0.2000.0__692fbea5521e1304\CrystalDecisions.Windows.Forms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>a4106446-0bc7-4553-aa5d-6b3e5b04435b</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinSchedule.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinSchedule.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinSchedule.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinSchedule.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>6cfca272-e4e9-434f-802e-e84fc85f6082</RecID>
+      <AssemblyFullName>Infragistics4.Win.UltraWinGrid.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Win.UltraWinGrid.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Win.UltraWinGrid.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Win.UltraWinGrid.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>302b1267-4382-43bc-ab56-aebafccf8c64</RecID>
+      <AssemblyFullName>Infragistics4.Shared.v13.1, Version=13.1.20131.2060, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb</AssemblyFullName>
+      <AssemblyName>Infragistics4.Shared.v13.1.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Infragistics4.Shared.v13.1\v4.0_13.1.20131.2060__7dd5c3163f2cd0cb\Infragistics4.Shared.v13.1.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>24719968-169f-4a71-bd0d-ec6c118cc95f</RecID>
+      <AssemblyFullName>ActiproSoftware.Shared.WinForms, Version=12.1.304.0, Culture=neutral, PublicKeyToken=c27e062d3c1a4763</AssemblyFullName>
+      <AssemblyName>ActiproSoftware.Shared.WinForms.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\ActiproSoftware.Shared.WinForms\12.1.304.0__c27e062d3c1a4763\ActiproSoftware.Shared.WinForms.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>5c1edfec-e03b-4fd1-afe8-51ae3d9d42f1</RecID>
+      <AssemblyFullName>FarPoint.Win, Version=8.35.20151.0, Culture=neutral, PublicKeyToken=327c3516b1b18457</AssemblyFullName>
+      <AssemblyName>FarPoint.Win.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\FarPoint.Win\8.35.20151.0__327c3516b1b18457\FarPoint.Win.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>f64f7455-ba75-44dc-a52a-ed9aa003e93c</RecID>
+      <AssemblyFullName>CrystalDecisions.ReportAppServer.ReportDefModel, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304</AssemblyFullName>
+      <AssemblyName>CrystalDecisions.ReportAppServer.ReportDefModel.dll</AssemblyName>
+      <AssemblyLocation>C:\WINDOWS\assembly\GAC_MSIL\CrystalDecisions.ReportAppServer.ReportDefModel\13.0.2000.0__692fbea5521e1304\CrystalDecisions.ReportAppServer.ReportDefModel.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>ae5c669f-2cbb-4d83-98f7-e98443f091cf</RecID>
+      <AssemblyFullName>JiwaInvReceivalUI, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaInvReceivalUI.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaInvReceivalUI.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>61f2c408-30b1-4409-be77-4591ad0b9ece</RecID>
+      <AssemblyFullName>JiwaInvReceival, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaInvReceival.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaInvReceival.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>4b72e3f8-d750-492d-8442-9b977de460e7</RecID>
+      <AssemblyFullName>JiwaPurchaseInvoicesUI, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaPurchaseInvoicesUI.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaPurchaseInvoicesUI.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>5aab4e76-88b8-4850-822b-35c3e7af63e9</RecID>
+      <AssemblyFullName>JiwaPurchaseInvoices, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaPurchaseInvoices.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaPurchaseInvoices.dll</AssemblyLocation>
+    </Reference>
+    <Reference>
+      <RecID>a5d6606e-243e-49ef-9584-93a66c1a3ad1</RecID>
+      <AssemblyFullName>JiwaPurchaseOrders, Version=7.0.151.0, Culture=neutral, PublicKeyToken=e30ce81e37f29c8c</AssemblyFullName>
+      <AssemblyName>JiwaPurchaseOrders.dll</AssemblyName>
+      <AssemblyLocation>E:\VSO\Jiwa 6\Jiwa\Built Files\JiwaPurchaseOrders.dll</AssemblyLocation>
+    </Reference>
+  </ReferenceCollection>
+</JiwaDocument>
